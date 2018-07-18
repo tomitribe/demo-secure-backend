@@ -43,125 +43,24 @@
     <plugin.tomee.version>7.0.4</plugin.tomee.version>
     <plugin.docker.version>0.26.0</plugin.docker.version>
 
-    <listening.port>9070</listening.port>
+    <cxf.version>3.1.13</cxf.version>
   </properties>
 
-  <!--<build>-->
-    <!--&lt;!&ndash;<finalName>movie-api</finalName>&ndash;&gt;-->
-
-    <!--<plugins>-->
-      <!--<plugin>-->
-        <!--<groupId>org.apache.maven.plugins</groupId>-->
-        <!--<artifactId>maven-clean-plugin</artifactId>-->
-        <!--<configuration>-->
-          <!--<filesets>-->
-            <!--<fileset>-->
-              <!--<directory>.distribution</directory>-->
-            <!--</fileset>-->
-          <!--</filesets>-->
-        <!--</configuration>-->
-      <!--</plugin>-->
-
-      <!--<plugin>-->
-        <!--<groupId>org.apache.rat</groupId>-->
-        <!--<artifactId>apache-rat-plugin</artifactId>-->
-        <!--<configuration>-->
-          <!--<excludes>-->
-            <!--<exclude>**/*.sql</exclude>-->
-          <!--</excludes>-->
-        <!--</configuration>-->
-      <!--</plugin>-->
-
-      <!--<plugin>-->
-        <!--<groupId>org.apache.maven.plugins</groupId>-->
-        <!--<artifactId>maven-compiler-plugin</artifactId>-->
-        <!--<configuration>-->
-          <!--<source>${maven.compiler.source}</source>-->
-          <!--<target>${maven.compiler.target}</target>-->
-        <!--</configuration>-->
-      <!--</plugin>-->
-
-      <!--<plugin>-->
-        <!--<groupId>org.apache.maven.plugins</groupId>-->
-        <!--<artifactId>maven-war-plugin</artifactId>-->
-        <!--<version>${plugin.war.version}</version>-->
-        <!--<configuration>-->
-          <!--<failOnMissingWebXml>false</failOnMissingWebXml>-->
-        <!--</configuration>-->
-      <!--</plugin>-->
-
-      <!--<plugin>-->
-        <!--<groupId>org.apache.tomee.maven</groupId>-->
-        <!--<artifactId>tomee-maven-plugin</artifactId>-->
-        <!--<version>${plugin.tomee.version}</version>-->
-        <!--<configuration>-->
-          <!--<tomeeHttpPort>9080</tomeeHttpPort>-->
-          <!--<tomeeAjpPort>9009</tomeeAjpPort>-->
-          <!--<tomeeShutdownPort>9005</tomeeShutdownPort>-->
-        <!--</configuration>-->
-        <!--<executions>-->
-          <!--<execution>-->
-            <!--<id>executable-jar</id>-->
-            <!--<goals>-->
-              <!--<goal>exec</goal>-->
-            <!--</goals>-->
-            <!--<phase>package</phase>-->
-          <!--</execution>-->
-        <!--</executions>-->
-      <!--</plugin>-->
-
-      <!--<plugin>-->
-        <!--<groupId>io.fabric8</groupId>-->
-        <!--<artifactId>docker-maven-plugin</artifactId>-->
-        <!--<version>${plugin.docker.version}</version>-->
-        <!--<configuration>-->
-          <!--<verbose>true</verbose>-->
-          <!--<pullRegistry>docker.io</pullRegistry>-->
-          <!--<images>-->
-            <!--<image>-->
-              <!--<name>tomitribedev/${project.artifactId}</name>-->
-              <!--<build>-->
-                <!--<from>openjdk:8-jre</from>-->
-                <!--<tags>-->
-                  <!--<tag>latest</tag>-->
-                  <!--<tag>${project.version}</tag>-->
-                <!--</tags>-->
-                <!--<ports>-->
-                  <!--<port>${listening.port}</port>-->
-                <!--</ports>-->
-                <!--<workdir>/usr/local/apps</workdir>-->
-                <!--<assembly>-->
-                  <!--<name>usr/local/apps</name>-->
-                  <!--<inline>-->
-                    <!--<files>-->
-                      <!--<file>-->
-                        <!--<source>${project.build.directory}/${project.build.finalName}-exec.jar</source>-->
-                        <!--<destName>${project.build.finalName}.jar</destName>-->
-                      <!--</file>-->
-                    <!--</files>-->
-                  <!--</inline>-->
-                <!--</assembly>-->
-                <!--<cmd>java -jar ${project.build.finalName}.jar</cmd>-->
-              <!--</build>-->
-              <!--<run>-->
-                <!--<ports>-->
-                  <!--<port>${listening.port}:${listening.port}</port>-->
-                <!--</ports>-->
-              <!--</run>-->
-            <!--</image>-->
-          <!--</images>-->
-        <!--</configuration>-->
-      <!--</plugin>-->
-    <!--</plugins>-->
-  <!--</build>-->
-
-  <!--<dependencies>-->
-    <!--<dependency>-->
-      <!--<groupId>org.apache.tomee</groupId>-->
-      <!--<artifactId>javaee-api</artifactId>-->
-      <!--<version>7.0-1</version>-->
-      <!--<scope>provided</scope>-->
-    <!--</dependency>-->
-  <!--</dependencies>-->
+    <dependencyManagement>
+      <dependencies>
+        <dependency>
+          <groupId>org.apache.tomee</groupId>
+          <artifactId>javaee-api</artifactId>
+          <version>7.0-1</version>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.cxf</groupId>
+          <artifactId>cxf-rt-rs-client</artifactId>
+          <version>${cxf.version}</version>
+          <scope>provided</scope>
+        </dependency>
+      </dependencies>
+    </dependencyManagement>
 
 </project>

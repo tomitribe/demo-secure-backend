@@ -19,7 +19,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.supertribe.movie</groupId>
+    <groupId>io.superbiz</groupId>
     <artifactId>movie-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
@@ -29,22 +29,7 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>war</packaging>
 
-  <scm>
-    <connection>scm:git:https://github.com/tomitribe/supertribe-monitoring</connection>
-    <developerConnection>scm:git:https://github.com/tomitribe/supertribe-monitoring</developerConnection>
-    <url>scm:git:https://github.com/tomitribe/supertribe-monitoring</url>
-    <tag>HEAD</tag>
-  </scm>
-
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
-
-    <plugin.war.version>3.1.0</plugin.war.version>
-    <plugin.tomee.version>7.0.4</plugin.tomee.version>
-    <plugin.docker.version>0.26.0</plugin.docker.version>
-
     <listening.port>9080</listening.port>
   </properties>
 
@@ -164,8 +149,6 @@
     <dependency>
       <groupId>org.apache.tomee</groupId>
       <artifactId>javaee-api</artifactId>
-      <version>7.0-1</version>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
 
