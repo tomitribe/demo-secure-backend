@@ -1,0 +1,1 @@
+{"endpoint":"http://localhost:9070","configuration":{"signature":[],"name":"ratings-app","header":[],"id":"ratings-app","oauth2":[],"basic":[{"password":"password","header":"Authorization","username":"rating"}]},"name":"ratings-app","tags":[]}

@@ -1,0 +1,1 @@
+{"endpoint":"http://localhost:9080","configuration":{"signature":[],"name":"movie-backend","header":[],"oauth2":[],"basic":[{"password":"password","header":"Authorization","username":"movie"}]},"name":"movie-backend","tags":[]}
