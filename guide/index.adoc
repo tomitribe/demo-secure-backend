@@ -5,7 +5,7 @@
 :sectid:
 :imagesdir: media
 
-= Secure your backend with the Tribestream API Gateway
+= Secure backend with the Tribestream API Gateway
 
 == Introduction
 
@@ -14,8 +14,8 @@
 
 === Learning objectives
 * Secure the access to multiple backend microservices.
-* Understand the difference between user (people) and client (software) authentications.
-* To understand how Security Profiles, API connections, User Accounts, Client Accounts and Routes work together.
+* Understand the difference between user (people) and client (software) accounts.
+* How Security Profiles, API connections, User Accounts, Client Accounts and Routes work together.
 
 === Prerequisites
 * Docker installed and the daemon is running on your computer.
@@ -25,12 +25,14 @@
 ** Secure Microservices with OAuth 2.0 & JWT
 ** Route Services with mod_rewrite
 
-== The Arquitecture
+== The Architecture
 We have one important requirement: *All* HTTP requests must be authenticated.
 
 This means the HTTP requests for both the frontend users and the backend services will be authenticated.
 
-=== Why authenticate calls in the backend?
+We are using 2 backend services.
+
+=== Why backend authentication?
 A significant number of organizations simply assume the intranet where the backend services are running is secure.
 With that in mind, they usually don't require authentication between services.
 Services can call each other without limitations.
@@ -40,6 +42,8 @@ There are a few famous data breaches that were performed by employees or contrac
 
 What about IP whitelisting?
 Someone from the outside, exploiting a vulnerability, can gain access to a trusted machine, leading also to data breaches.
+
+image::no-backend-security.png[title="No Backend Authentication"]
 
 In parallel to these attack vectors, as organizations grow, and you keep increasing the number of services and developer teams, you will want to keep an eye on how's executing which services and why.
 You want to keep track on who's generating more load and even disable a particular service.
@@ -59,41 +63,109 @@ No one, apart from the TAG and a particular service, will know the credentials. 
 
 To wrap it up, we need backend authentication because:
 * The intranet is not that secure.
-* HTTP requests can only bee processed from trusted sources.
+* HTTP requests can only bee processed from authenticated sources.
 * We can revoke access to misbehaved microservices at any time.
 
-=== What we are showing
-Remember the Movie application from previous guides? It turns out that we were asked to spit it...
+=== Our setup
+Remember the Movie application from previous guides? It turns out that we were asked to split it...
 For some super clever reason we had to extract the ratings into a separated microservice.
 
 Now we have the _movie-back_ and the _ratings-app_ microservices.
 The _movie-back_ will need, from now on, to do an HTTP request to the _ratings-app_ to know the rating of each movie.
 
+Frontend users will still see it as _movie_ and will need to use OAuth 2.0 authentication.
 
-image::signed_message_example.png[title="Signed message example"]
+The requests are then forward to the _movie-back_ microservice using Basic authentication. In order to call the _ratings_app_ we also need to use Basic authentication, and remember, ony the TAG knows the credentials of all the microservices.
 
-//todo
+image::architecture.png[title="Our Architecture"]
+
+An additional architectural advantage of having the TAG, but we are not showing today is that the endpoints are normalised and resilient to changes. The endpoints of the microservices themselves can change without impacting who's using them.
 
 === Much more
 In this case we are using Basic authentication without HTTPS. Don't do that in production.
 
-Ideally, the backed requests should be secured using HTTP Signatures. We are not doing in this guide to keep the client applications simpler.
+Basic authentication cannot prevent replay attacks.
+
+Ideally, the backed requests should be secured using HTTP Signatures. We are not doing in this guide to keep the client applications simpler. If you haven't seen it yet, take a look at the HTTP Signatures guide.
 
 == The Demo
 
+=== Start the Tribestream API Gateway (TAG)
+On another terminal execute the following command according to your operating system:
 
+We can reuse the TAG docker container we created from the Tribe quickstart guide. To start TAG execute the following command:
+```
+docker start tag
+```
+If this is the first time you run TAG, open a terminal execute the following command according to your operating system:
+
+For linux:
+```
+docker run --net="host" -de LICENSE=accept --name tag -p 8080:8080 tomitribe/tribestream-api-gateway
+```
+For OsX:
+```
+docker run -de LICENSE=accept --name tag -p 8080:8080  tomitribe/tribestream-api-gateway
+```
+To see the TAG starting process log you can execute the following command:
+```
+docker logs -f tag
+```
+
+=== Open the TAG
+Open a browser and navigate to: http://localhost:8080/tag
+
+Login into the TAG dashboard using the following credentials:
+
+* username:admin
+* password:admin
+
+image::loginGif.gif[title="TAG login and dashboard"]
+
+=== Start the movie backend microservice
+In order to run our demo Microservice we need to open a terminal and execute the following command:
+
+If we already have used the movie-back:
+```
+docker start movie-back
+```
+For the first time:
+```
+docker run -d -p 9080:9080 --name movie-back  tomitribedev/movie-back
+```
+We can validate that our microservice is up and running by executing the following command:
+```
+curl -i http://localhost:9080/movie-back/api/movies
+```
+
+=== start the ratings app microservice
+In order to run our demo Microservice we need to open a terminal and execute the following command:
+
+If we already have used the ratings-app:
+```
+docker start ratings-app
+```
+For the first time:
+```
+docker run -d -p 9070:9070 --name ratings-app  tomitribedev/ratings-app
+```
+We can validate that our microservice is up and running by executing the following command:
+```
+curl -i http://localhost:9070/ratings-app/api/ratings
+```
 
 == Stop all
 
 Since both the TAG and the microservice were created with a specific container name, you can now stop both containers, from the command line execute the following command.
 
-Stopping TAG:
+Stopping TAG:OAuth 2.0
+
 ```
 docker stop tag
 ```
-Stopping the microservice:
+Stopping the movie backend microservice:
 ```
-docker stop movie-api
+docker stop movie-back
 ```
 
 
