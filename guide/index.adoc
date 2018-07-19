@@ -1,0 +1,120 @@
+:encoding: UTF-8
+:linkattrs:
+:sectlink:
+:sectanchors:
+:sectid:
+:imagesdir: media
+
+= Secure your backend with the Tribestream API Gateway
+
+== Introduction
+
+=== Time
+10 minutes
+
+=== Learning objectives
+* Secure the access to multiple backend microservices.
+* Understand the difference between user (people) and client (software) authentications.
+* To understand how Security Profiles, API connections, User Accounts, Client Accounts and Routes work together.
+
+=== Prerequisites
+* Docker installed and the daemon is running on your computer.
+* Git command line tool.
+* *This is an advanced guide.* It's helpful if you have seen already the following guides:
+** Quickstart
+** Secure Microservices with OAuth 2.0 & JWT
+** Route Services with mod_rewrite
+
+== The Arquitecture
+We have one important requirement: *All* HTTP requests must be authenticated.
+
+This means the HTTP requests for both the frontend users and the backend services will be authenticated.
+
+=== Why authenticate calls in the backend?
+A significant number of organizations simply assume the intranet where the backend services are running is secure.
+With that in mind, they usually don't require authentication between services.
+Services can call each other without limitations.
+
+What if someone gains access to that intranet and is able to query all the REST APIs without limitations?
+There are a few famous data breaches that were performed by employees or contractors.
+
+What about IP whitelisting?
+Someone from the outside, exploiting a vulnerability, can gain access to a trusted machine, leading also to data breaches.
+
+In parallel to these attack vectors, as organizations grow, and you keep increasing the number of services and developer teams, you will want to keep an eye on how's executing which services and why.
+You want to keep track on who's generating more load and even disable a particular service.
+
+In this example we assume the organization isolates all the services.
+All requests must go trough the API gateway.
+There is merit in centralising credentials management.
+Imagine what you have an environment with 10 microservices and you add a new one used by half of them...
+You need to propagate your credentials through 5 different teams.
+The more people have access to the credentials, the higher the chance of a breach.
+
+To each service, two sets of credentials will be given:
+* Inbound credentials for the received requests.
+* Outbound credentials for all requests that service needs to perform.
+
+No one, apart from the TAG and a particular service, will know the credentials. If at some point a misbehaved microservice needs to be isolated by the support team, because it has a bug doing calls in a loop, you can immediately disable its credentials.
+
+To wrap it up, we need backend authentication because:
+* The intranet is not that secure.
+* HTTP requests can only bee processed from trusted sources.
+* We can revoke access to misbehaved microservices at any time.
+
+=== What we are showing
+Remember the Movie application from previous guides? It turns out that we were asked to spit it...
+For some super clever reason we had to extract the ratings into a separated microservice.
+
+Now we have the _movie-back_ and the _ratings-app_ microservices.
+The _movie-back_ will need, from now on, to do an HTTP request to the _ratings-app_ to know the rating of each movie.
+
+
+image::signed_message_example.png[title="Signed message example"]
+
+//todo
+
+=== Much more
+In this case we are using Basic authentication without HTTPS. Don't do that in production.
+
+Ideally, the backed requests should be secured using HTTP Signatures. We are not doing in this guide to keep the client applications simpler.
+
+== The Demo
+
+
+
+== Stop all
+
+Since both the TAG and the microservice were created with a specific container name, you can now stop both containers, from the command line execute the following command.
+
+Stopping TAG:
+```
+docker stop tag
+```
+Stopping the microservice:
+```
+docker stop movie-api
+```
+
+
+== That's it
+
+Thanks for reading this guide.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,9 @@
+%YAML 1.2
+---
+documentation:
+
+  - doc_root: 'guide/index.adoc'
+    name: 'Examples'
+    display_name: 'Secure your backend with the Tribestream API Gateway'
+    public_path: 'en/api-gateway/secure-backend-guide'
+    single_page: 'true'
