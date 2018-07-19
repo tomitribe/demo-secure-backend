@@ -12,9 +12,10 @@ curl -v \
 
 post data/user-bob.json http://localhost:8080/tag/api/account
 post data/user-alice.json http://localhost:8080/tag/api/account
-post data/api-movie-backend.json http://localhost:8080/tag/api/http
+post data/movie-client.json http://localhost:8080/tag/api/account
+post data/api-movie-backend_linux.json http://localhost:8080/tag/api/http
 # this is for the new app
-# post data/api-ratings-app.json http://localhost:8080/tag/api/http
+# post data/api-ratings-app_linux.json http://localhost:8080/tag/api/http
 post data/oauth2-profile-no-client.json http://localhost:8080/tag/api/profile/oauth2
 post data/route-user-access.json http://localhost:8080/tag/api/route
 # this is for the new app
