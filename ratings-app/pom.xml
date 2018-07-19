@@ -30,7 +30,7 @@
   <packaging>war</packaging>
 
   <properties>
-    <listening.port>9080</listening.port>
+    <listening.port>9070</listening.port>
   </properties>
 
   <build>
