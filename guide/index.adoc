@@ -101,7 +101,7 @@ If this is the first time you run TAG, open a terminal execute the following com
 
 For linux:
 ```
-docker run --net="host" -de LICENSE=accept --name tag -p 8080:8080 tomitribe/tribestream-api-gateway
+docker run --net="host" -de LICENSE=accept --name tag tomitribe/tribestream-api-gateway
 ```
 For OsX:
 ```
@@ -137,6 +137,7 @@ We can validate that our microservice is up and running by executing the followi
 ```
 curl -i http://localhost:9080/movie-back/api/movies
 ```
+You must get a 401 error for unouthorized.
 
 === start the ratings app microservice
 In order to run our demo Microservice we need to open a terminal and execute the following command:
@@ -151,8 +152,30 @@ docker run -d -p 9070:9070 --name ratings-app  tomitribedev/ratings-app
 ```
 We can validate that our microservice is up and running by executing the following command:
 ```
-curl -i http://localhost:9070/ratings-app/api/ratings
+curl -i http://localhost:9070/rating-app/api/ratings
 ```
+You must get a 401 error for unouthorized.
+
+=== Configure the TAG
+We are going to add 2 user accounts, a client account, an OAuth 2.0 security profile, 2 API Connections and 2 routes to our microservices.
+Please checkout this github project:
+```
+git clone https://github.com/tomitribe/demo-secure-backend.git
+```
+Change to the _demo-secure-backend_ folder:
+```
+cd demo-secure-backend
+```
+And execute this script for Linux:
+```
+./setup_data_linux.sh
+```
+Or this one for OsX or Windows:
+```
+./setup_data_osx.sh
+```
+The difference relates to how Docker sees the host computer network.
+
 
 == Stop all
 
