@@ -15,6 +15,7 @@
 === Learning objectives
 * Secure the access to multiple backend microservices.
 * Understand the difference between user (people) and client (software) accounts.
+* Decouple one application into 2 microservices.
 * How Security Profiles, API connections, User Accounts, Client Accounts and Routes work together.
 
 === Prerequisites
@@ -88,6 +89,51 @@ Basic authentication cannot prevent replay attacks.
 
 Ideally, the backed requests should be secured using HTTP Signatures. We are not doing in this guide to keep the client applications simpler. If you haven't seen it yet, take a look at the HTTP Signatures guide.
 
+== Code changes
+We renamed the original movie-app to movie-back, for backend.
+Then we extracted the ratings logic into a new microservice having it's own REST API, with one endpoint published at:
+
+GET http://localhost:9070/rating-app/api/ratings/{id}
+
+=== CXF HTTP Client
+In order to do HTTP requests, we had to add a new library to the movie-back https://github.com/tomitribe/demo-secure-backend/blob/master/movie-back/pom.xml[pom.xml file]:
+
+```xml
+<dependency>
+  <groupId>org.apache.cxf</groupId>
+  <artifactId>cxf-rt-rs-client</artifactId>
+  <version>3.1.13</version>
+  <scope>provided</scope>
+</dependency>
+```
+The requests are made in the https://github.com/tomitribe/demo-secure-backend/blob/master/movie-back/src/main/java/io/superbiz/movie/persistence/MoviesBean.java[_MovieBean_ class]:
+```java
+//Instantiate the client:
+private final String ratingsUser = System.getProperty("api.access.user");
+private final String ratingsPassword = System.getProperty("api.access.password");
+
+private final WebClient webClient = WebClient.create("http://localhost:8080", ratingsUser, ratingsPassword, null);
+
+/**
+ * Get the rating of a movie.
+ *
+ * @param id the movie ID
+ * @return an int between 0 (avoid) to 10 (masterpiece)
+ */
+private int getRating(final long id) {
+    return webClient.reset()
+            .path(RATING_PATH, id)
+            .get(Integer.class);
+}
+```
+Because the microservices use http://tomee.apache.org/download-ng.html[TomEE], we can store the client credentials on the https://github.com/tomitribe/demo-secure-backend/blob/master/movie-back/src/main/tomee/conf/system.properties[system.properties file] at tomee/conf:
+
+=== Activate basic auth on the Microservices
+Both microservices use http://tomee.apache.org/download-ng.html[TomEE], for Basic auth we simply need to add a tomcat-users.xml file at tomee/conf:
+
+* https://github.com/tomitribe/demo-secure-backend/blob/master/movie-back/src/main/tomee/conf/tomcat-users.xml[Movie-back credentials]
+* https://github.com/tomitribe/demo-secure-backend/blob/master/ratings-app/src/main/tomee/conf/tomcat-users.xml[Ratings-app credentials]
+
 == The Demo
 
 === Start the Tribestream API Gateway (TAG)
@@ -131,7 +177,7 @@ docker start movie-back
 ```
 For the first time:
 ```
-docker run -d -p 9080:9080 --name movie-back  tomitribedev/movie-back
+docker run -d --net="host" --name movie-back  tomitribedev/movie-back
 ```
 We can validate that our microservice is up and running by executing the following command:
 ```
@@ -176,6 +222,69 @@ Or this one for OsX or Windows:
 ```
 The difference relates to how Docker sees the host computer network.
 
+=== Test request will fail
+The base setup assumes you only had the old microservice on, hence, it only has the user's OAuth profile,
+the route and its API connection to can the _movie-back_ microservice:
+
+image::movie-back.png[title="User Route forwards request to the Movie microservice"]
+
+Because we now have the rating-app, we need to:
+
+* Create the new routings-app API Connection
+* Use that API Connection in the new Ratings Route
+* Add a client secret to the movie-backend client account. This will allow the service make calls to the Ratings Route, which is protected with Basic auth
+
+image::movie-backend-account.png[title="Movie calls the Ratings Route"]
+
+=== Add API connection
+On the Dashboard, click connections. Then, in the menu, click add API Connection. The modal view will popup:
+
+image::api-connections-popup.png[title="Add Ratings API Connection"]
+Because of how Docker works the location to insert is different for:
+
+Linux: ```http://localhost:9070```
+OSx and Windows: ```http://host.docker.internal:9070```
+
+After clicking _Save_, the details page will be shown and, in the menu, you can add the Basic auth authentication:
+
+image::api-connections-menu.png[title="The API Connection Menu - Add Basic Auth"]
+
+A new section will be shown and you can add the necessary credentials to call the _ratings-app_. They have to match what you put in the https://github.com/tomitribe/demo-secure-backend/blob/master/ratings-app/src/main/tomee/conf/tomcat-users.xml[tomcat-users.xml of that app]:
+username: rating; password: password.
+
+image::api-connection-basic-auth.png[title="The API Connection Menu - Add Basic Auth"]
+
+=== Add new Ratings Route
+On the Dashboard, click _Routes_. Then, in the menu, click add _Mod_Rewrite Route_. The modal view will popup:
+
+image::route-creation.png[title="Add Ratings Route"]
+Add the name and the following rule:
+```bash
+RewriteRule ^/?ratings(.*) %{API:ratings-app}/rating-app/api/ratings$1 [P,NE,auth]
+```
+Where ```%{API:ratings-app}``` will use the previously created API Connection and the ```auth``` flag will open up the section where you can add the Basic profile. This will require all connection to this route to be authenticated with basic auth.
+
+=== Add movie-backend client secret
+We've already added the movie cliente account, we just need to add a client secret to it.
+
+User accounts use _passwords_, software applications use _client secrets_.
+
+On the Dashboard, click _Accounts_ and on the _Movie Client Access_ client Account:
+
+image::account-menu.png[title="Account details menu"]
+The modal will popup:
+
+image::account-add-secret.png[title="Add client secret"]
+We could also use OAuth 2.0 authentication. That capability if on, but we will not use it in this guide. Save it.
+
+=== Test the setup
+Let's simulate a user request by using the routes test window. Go to the Dashboard and select Routes. From the list click on the _user-route_. On the menu, click _Test_:
+
+image::test-window.gif[title="Making a test"]
+
+We use the Resource URL: ```/movie/movies``` we add OAuth 2.0 authentication with username: bob; password: superpassword.
+
+When we click test we can see the 200 OK and the movies list shown in the payload section at the bottom.
 
 == Stop all
 
@@ -189,6 +298,10 @@ docker stop tag
 Stopping the movie backend microservice:
 ```
 docker stop movie-back
+```
+Stopping the ratings app microservice:
+```
+docker stop ratings-app
 ```
 
 

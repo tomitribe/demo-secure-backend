@@ -21,3 +21,10 @@ post data/oauth2-profile-no-client.json http://localhost:8080/tag/api/profile/oa
 post data/route-user-access.json http://localhost:8080/tag/api/route
 # this is for the new app
 # post data/route-ask-ratings.json http://localhost:8080/tag/api/route
+# remove default p
+curl -v \
+ --header "Content-Type: application/json" \
+ --header 'accept: application/json' \
+ --header 'authorization: Basic YWRtaW46YWRtaW4=' \
+ --header 'cache-control: no-cache' \
+ http://localhost:8080/tag/api/profile/oauth2/oauth2-profile?migrateProfileId=oauth2-user-access-profile
