@@ -11,6 +11,7 @@ curl -v \
 }
 
 post data/user-bob.json http://localhost:8080/tag/api/account
+post data/user-password-bob.json http://localhost:8080/tag/api/account/bob
 post data/user-alice.json http://localhost:8080/tag/api/account
 post data/movie-client.json http://localhost:8080/tag/api/account
 post data/api-movie-backend_linux.json http://localhost:8080/tag/api/http
