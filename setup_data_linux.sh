@@ -27,4 +27,5 @@ curl -v \
  --header 'accept: application/json' \
  --header 'authorization: Basic YWRtaW46YWRtaW4=' \
  --header 'cache-control: no-cache' \
+ -X DELETE \
  http://localhost:8080/tag/api/profile/oauth2/oauth2-profile?migrateProfileId=oauth2-user-access-profile
