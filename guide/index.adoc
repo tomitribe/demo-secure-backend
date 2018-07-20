@@ -31,7 +31,7 @@ We have one important requirement: *All* HTTP requests must be authenticated.
 
 This means the HTTP requests for both the frontend users and the backend services will be authenticated.
 
-We are using 2 backend services.
+We are using 2 backend services to demonstrate how the calls between them should be setup.
 
 === Why backend authentication?
 A significant number of organizations simply assume the intranet where the backend services are running is secure.
@@ -49,7 +49,7 @@ image::no-backend-security.png[title="No Backend Authentication"]
 In parallel to these attack vectors, as organizations grow, and you keep increasing the number of services and developer teams, you will want to keep an eye on how's executing which services and why.
 You want to keep track on who's generating more load and even disable a particular service.
 
-In this example we assume the organization isolates all the services.
+In this guide we assume the organization isolates all the services.
 All requests must go trough the API gateway.
 There is merit in centralising credentials management.
 Imagine what you have an environment with 10 microservices and you add a new one used by half of them...
@@ -57,18 +57,20 @@ You need to propagate your credentials through 5 different teams.
 The more people have access to the credentials, the higher the chance of a breach.
 
 To each service, two sets of credentials will be given:
+
 * Inbound credentials for the received requests.
 * Outbound credentials for all requests that service needs to perform.
 
 No one, apart from the TAG and a particular service, will know the credentials. If at some point a misbehaved microservice needs to be isolated by the support team, because it has a bug doing calls in a loop, you can immediately disable its credentials.
 
 To wrap it up, we need backend authentication because:
+
 * The intranet is not that secure.
 * HTTP requests can only bee processed from authenticated sources.
 * We can revoke access to misbehaved microservices at any time.
 
 === Our setup
-Remember the Movie application from previous guides? It turns out that we were asked to split it...
+Remember the Movie application from previous guides? It turns out we were asked to split it...
 For some super clever reason we had to extract the ratings into a separated microservice.
 
 Now we have the _movie-back_ and the _ratings-app_ microservices.
@@ -137,7 +139,7 @@ Both microservices use http://tomee.apache.org/download-ng.html[TomEE], for Basi
 == The Demo
 
 === Start the Tribestream API Gateway (TAG)
-On another terminal execute the following command according to your operating system:
+To start the TAG, execute the following command according to your operating system:
 
 We can reuse the TAG docker container we created from the Tribe quickstart guide. To start TAG execute the following command:
 ```
