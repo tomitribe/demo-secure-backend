@@ -10,7 +10,7 @@
 == Introduction
 
 === Time
-10 minutes
+12 minutes
 
 === Learning objectives
 * Secure the access to multiple backend microservices.
