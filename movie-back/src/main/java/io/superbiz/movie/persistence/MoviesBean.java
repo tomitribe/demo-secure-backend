@@ -45,13 +45,13 @@ import static javax.transaction.Transactional.TxType.SUPPORTS;
 @Transactional(SUPPORTS)
 public class MoviesBean {
 
-//    private static final String RATING_PATH = "rating-app/api/ratings/{id}";
+    //    private static final String RATING_PATH = "rating-app/api/ratings/{id}";
     private static final String RATING_PATH = "ratings/{id}";
 
     private final String ratingsUser = System.getProperty("api.access.user");
     private final String ratingsPassword = System.getProperty("api.access.password");
 
-//    private final WebClient webClient = WebClient.create("http://localhost:9070", ratingsUser, ratingsPassword, null);
+    //    private final WebClient webClient = WebClient.create("http://localhost:9070", ratingsUser, ratingsPassword, null);
     private final WebClient webClient = WebClient.create("http://localhost:8080", ratingsUser, ratingsPassword, null);
 
 
@@ -154,6 +154,12 @@ public class MoviesBean {
         return result;
     }
 
+    /**
+     * Get the rating of a movie.
+     *
+     * @param id the movie ID
+     * @return an int between 0 (avoid) to 10 (masterpiece)
+     */
     private int getRating(final long id) {
         return webClient.reset()
                 .path(RATING_PATH, id)
